@@ -28,7 +28,9 @@ public class Main extends Application {
             FileChooser choose = new FileChooser();
             file = choose.showOpenDialog(window);
             System.out.println(file.getAbsolutePath());
+            System.out.println("Action event: " + e);
             picture = new Image("file:"+ file.getAbsolutePath());
+            // TODO: Tell it to redraw window
         });
         MenuItem close = new MenuItem("close program");
         fileMenu.getItems().addAll(save,saveAs,open,close);
