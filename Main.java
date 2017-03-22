@@ -19,7 +19,10 @@ public class Main extends Application {
     public void start(Stage primaryStage) throws Exception{
         window = primaryStage;
         window.setTitle("image editor");
-
+        ImageView pictureFrame = new ImageView();
+        MenuBar menus = new MenuBar();
+        BorderPane layout = new BorderPane();
+        
         Menu fileMenu = new Menu("file");
         MenuItem save = new MenuItem("save");
         MenuItem saveAs = new MenuItem("save as...");
@@ -28,9 +31,9 @@ public class Main extends Application {
             FileChooser choose = new FileChooser();
             file = choose.showOpenDialog(window);
             System.out.println(file.getAbsolutePath());
-            System.out.println("Action event: " + e);
             picture = new Image("file:"+ file.getAbsolutePath());
-            // TODO: Tell it to redraw window
+            pictureFrame.setImage(picture);
+            window.show();
         });
         MenuItem close = new MenuItem("close program");
         fileMenu.getItems().addAll(save,saveAs,open,close);
@@ -58,13 +61,9 @@ public class Main extends Application {
         MenuItem deleteLayer = new Menu("deleteLayer...");
         layersMenu.getItems().addAll(addLayer,changeLayer,deleteLayer);
 
-        MenuBar menus = new MenuBar();
         menus.getMenus().addAll(fileMenu,editMenu,toolsMenu,layersMenu);
 
-        ImageView pictureFrame = new ImageView();
-        pictureFrame.setImage(picture);
 
-        BorderPane layout = new BorderPane();
         layout.setTop(menus);
         layout.setCenter(pictureFrame);
 
