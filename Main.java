@@ -1,24 +1,28 @@
+import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.stage.*;
 import javafx.scene.*;
 import javafx.scene.layout.*;
 import javafx.scene.control.*;
 import javafx.application.Application;
-
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import java.io.File;
+import java.util.ArrayList;
+
+//package org.wilsonhs.slevenson;
 
 public class Main extends Application {
 
     Stage window;
     File file;
-    Image picture;
+    PictureBox picturebox;
 
     @Override
     public void start(Stage primaryStage) throws Exception{
         window = primaryStage;
         window.setTitle("image editor");
+        picturebox = new PictureBox();
         ImageView pictureFrame = new ImageView();
         MenuBar menus = new MenuBar();
         BorderPane layout = new BorderPane();
@@ -31,11 +35,14 @@ public class Main extends Application {
             FileChooser choose = new FileChooser();
             file = choose.showOpenDialog(window);
             System.out.println(file.getAbsolutePath());
-            picture = new Image("file:"+ file.getAbsolutePath());
-            pictureFrame.setImage(picture);
+            picturebox.addLayer(file);
+            pictureFrame.setImage(picturebox.display());
             window.show();
         });
         MenuItem close = new MenuItem("close program");
+        close.setOnAction(e -> {
+            Platform.exit();
+        });
         fileMenu.getItems().addAll(save,saveAs,open,close);
 
         Menu editMenu = new Menu("edit");
@@ -44,6 +51,9 @@ public class Main extends Application {
         MenuItem paste = new Menu("paste");
         MenuItem deselect = new Menu("deselect");
         MenuItem apply = new Menu("apply...");
+        apply.setOnAction(e -> {
+            picturebox.applyFilter(FilterSelectionBox.display());
+        });
         editMenu.getItems().addAll(cut,copy,paste,deselect,apply);
 
         Menu toolsMenu = new Menu("tools");
