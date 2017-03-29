@@ -1,6 +1,3 @@
-//package org.wilsonhs.slevenson;
-
-import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.ChoiceBox;
@@ -15,30 +12,27 @@ import java.util.ArrayList;
 /**
  *
  */
-public class FilterSelectionBox {
+public class LayerDeleteBox {
+    private static int layerToDelete;
 
-    private static ArrayList<double[][]> filterList;
-    private static double[][] filterChoice;
-
-    public static double[][] display() {
+    public static int display(ArrayList<Layer> layers) {
         Stage window = new Stage();
 
         window.initModality(Modality.APPLICATION_MODAL);
-        window.setTitle("filter selection");
+        window.setTitle("delete layer");
         window.setMinWidth(250);
 
         Label label = new Label();
-        label.setText("what filter do you want?");
+        label.setText("what layer do you want to delete?");
 
-        ChoiceBox<String> choiceBox = new ChoiceBox<>();
-        choiceBox.getItems().add("a list");
-        choiceBox.getItems().add("of filters");
-        choiceBox.getItems().add("that do not do anything yet");
-        choiceBox.getSelectionModel().selectFirst();
-        //continue to add more filters in the future
+        ChoiceBox<String> choicebox = new ChoiceBox<>();
+        for (Layer layer : layers) {
+            choicebox.getItems().add(layer.getName());
+        }
+        choicebox.getSelectionModel().selectFirst();
 
-        Button ok = new Button("ok");
-        ok.setOnAction(e -> getChoice(choiceBox));
+        Button ok = new Button("delete");
+        ok.setOnAction(e -> getChoice(choicebox));
         Button close = new Button("close");
         HBox buttons = new HBox();
         buttons.setSpacing(10);
@@ -46,17 +40,15 @@ public class FilterSelectionBox {
         close.setOnAction(e -> window.close());
         VBox layout = new VBox();
         layout.setSpacing(10);
-        layout.getChildren().addAll(label, choiceBox, buttons);
+        layout.getChildren().addAll(label, choicebox, buttons);
         Scene scene = new Scene(layout);
         window.setScene(scene);
         window.showAndWait();
-        return filterChoice;
+
+        return layerToDelete;
     }
 
     private static void getChoice(ChoiceBox<String> choiceBox) {
-        if(choiceBox.getValue().equals("test")) {
             //
-        }
-
     }
 }

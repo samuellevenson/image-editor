@@ -1,24 +1,21 @@
-import javafx.scene.image.Image;
-import javafx.scene.image.PixelReader;
-import javafx.scene.image.PixelWriter;
-import javafx.scene.image.WritableImage;
+//package org.wilsonhs.slevenson;
+
+import javafx.scene.image.*;
 import java.io.File;
 import java.util.ArrayList;
-
-//package org.wilsonhs.slevenson;
 
 /**
  *
  */
-
 public class PictureBox {
     private ArrayList<Layer> layers;
     private int currentLayer;
     private static int width = Layer.maxWidth;
     private static int height = Layer.maxHeight;
+    private ImageView view;
 
     public PictureBox() {
-        layers = new ArrayList<Layer>();
+        layers = new ArrayList<>();
         currentLayer = -1;
     }
     /*
@@ -34,23 +31,13 @@ public class PictureBox {
      * puts the layers into the order where 0 is the backmost and the last layer element in the frontmost to create one image
      */
     public Image display() {
-        WritableImage result = new WritableImage(width, height);
-        for(int x = 0; x < width; x++) {
-            for(int y = 0; y < height; y++) {
-                for(int layer = layers.size()-1; layer >= 0; layer --) {
-                    //check if this layer has a pixel in the spot x,y
-                    //if yes, set the result image to that pixel
-                    //if no, move on to the next layer
-                }
-            }
-        }
         //temporary
         return layers.get(layers.size()-1).getPicture();
     }
     /*
      * removes the given layer from the picture
      */
-    public void removeLayer(int layer) {
+    public void deleteLayer(int layer) {
         layers.remove(layer);
     }
     /*
@@ -58,7 +45,6 @@ public class PictureBox {
      */
     public void scale (int newW, int newH) {
         PixelReader reader = layers.get(currentLayer).getPicture().getPixelReader();
-
 
     }
     /*
@@ -71,7 +57,16 @@ public class PictureBox {
      * applies the kernel to the image in the current layer
      */
     public void applyFilter(double[][] kernel) {
-
+        int r = kernel.length/2;
+        PixelWriter writer = layers.get(currentLayer).getPicture().getPixelWriter();
+        for(int x0 = r; x0 < layers.get(currentLayer).getPicture().getWidth() - r; x0++) {
+            for(int y0 = r; y0 < layers.get(currentLayer).getPicture().getHeight() - r; y0++) {
+                //
+            }
+        }
+    }
+    public ArrayList<Layer> getLayers() {
+        return layers;
     }
 
 }
