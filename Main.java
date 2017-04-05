@@ -2,6 +2,7 @@
 
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
+import javafx.scene.effect.Effect;
 import javafx.stage.*;
 import javafx.scene.*;
 import javafx.scene.layout.*;
@@ -16,16 +17,17 @@ public class Main extends Application {
 
     Stage window;
     File file;
-    PictureBox picturebox;
+    StackPane imageStack;
+    ArrayList<Layer> layers = new ArrayList<>();
+    VBox visibilityCheckboxes = new VBox();
+    int currentLayer = -1;
 
     @Override
     public void start(Stage primaryStage) throws Exception{
         window = primaryStage;
         window.setTitle("image editor");
-        picturebox = new PictureBox();
-        ImageView pictureFrame = new ImageView();
-        pictureFrame.setFitWidth(500);
-        pictureFrame.setPreserveRatio(true);
+        imageStack = new StackPane();
+        imageStack.setMaxWidth(500);
         MenuBar menus = new MenuBar();
         BorderPane layout = new BorderPane();
         
@@ -37,8 +39,9 @@ public class Main extends Application {
             FileChooser choose = new FileChooser();
             file = choose.showOpenDialog(window);
             System.out.println(file.getAbsolutePath());
-            picturebox.addLayer(file);
-            pictureFrame.setImage(picturebox.display());
+            currentLayer = 0;
+            layers.add(new Layer(file));
+            imageStack.getChildren().add(new ImageView(layers.get(layers.size()-1).getPicture()));
             window.show();
         });
         MenuItem close = new MenuItem("close program");
@@ -60,30 +63,40 @@ public class Main extends Application {
         MenuItem resize = new Menu("resize");
         MenuItem rotate = new Menu("rotate");
         MenuItem filter = new Menu("filter");
-        filter.setOnAction(e -> picturebox.applyFilter(FilterSelectionBox.display()));
+        filter.setOnAction(e -> {
+            Effect f = FilterSelectionBox.display();
+            imageStack.getChildren().get(currentLayer).setEffect(f);
+        });
         toolsMenu.getItems().addAll(brush,fill,eraser,crop,resize,rotate,filter);
 
         Menu layersMenu = new Menu("layers");
         MenuItem addLayer = new Menu("add layer...");
         addLayer.setOnAction(e -> {
             FileChooser choose = new FileChooser();
-            file = choose.showOpenDialog(window);
-            System.out.println(file.getAbsolutePath());
-            picturebox.addLayer(file);
+            File add = choose.showOpenDialog(window);
+            layers.add(new Layer(add));
+            imageStack.getChildren().add(new ImageView(layers.get(layers.size()-1).getPicture()));
             window.show();
         });
+
         MenuItem changeLayer = new Menu("change layer... ");
+        changeLayer.setOnAction(e -> {
+            currentLayer = ChangeLayerBox.display(layers);
+        });
         MenuItem deleteLayer = new Menu("deleteLayer...");
-        deleteLayer.setOnAction(e -> picturebox.deleteLayer(LayerDeleteBox.display(picturebox.getLayers())));
+        deleteLayer.setOnAction(e -> {
+            int toDelete = LayerDeleteBox.display(layers);
+            layers.remove(toDelete);
+            imageStack.getChildren().remove(toDelete,toDelete+1);
+            window.show();
+        });
         layersMenu.getItems().addAll(addLayer,changeLayer,deleteLayer);
 
         menus.getMenus().addAll(fileMenu,editMenu,toolsMenu,layersMenu);
-
-
         layout.setTop(menus);
-        layout.setCenter(pictureFrame);
-
-        Scene scene = new Scene(layout, 700, 500);
+        layout.setCenter(imageStack);
+        layout.setRight(visibilityCheckboxes);
+        Scene scene = new Scene(layout, 800, 600);
         window.setScene(scene);
         window.show();
     }

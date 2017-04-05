@@ -14,8 +14,6 @@ public class Layer {
     private double xPos;
     private double yPos;
     private boolean visible;
-    public static int maxWidth = 100;
-    public static int maxHeight = 100;
 
     public Layer(File f) {
         {

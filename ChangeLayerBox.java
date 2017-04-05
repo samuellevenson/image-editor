@@ -1,11 +1,7 @@
-//package org.wilsonhs.slevenson;
-
-import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.Label;
-import javafx.scene.effect.*;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.Modality;
@@ -16,30 +12,33 @@ import java.util.ArrayList;
 /**
  *
  */
-public class FilterSelectionBox {
+public class ChangeLayerBox {
+    private static int newCurrentLayer;
 
-    private static Effect filter;
-
-    public static Effect display() {
+    public static int display(ArrayList<Layer> layers) {
         Stage window = new Stage();
 
         window.initModality(Modality.APPLICATION_MODAL);
-        window.setTitle("filter selection");
+        window.setTitle("set current layer");
         window.setMinWidth(250);
 
         Label label = new Label();
-        label.setText("what filter do you want?");
+        label.setText("what layer do you want as the current layer?");
 
-        ChoiceBox<Effect> choiceBox = new ChoiceBox<>();
-        choiceBox.getItems().add(new BoxBlur());
-        choiceBox.getItems().add(new GaussianBlur());
-        choiceBox.getItems().add(new SepiaTone());
-        choiceBox.getItems().add(new Glow());
-        choiceBox.getSelectionModel().selectFirst();
+        ChoiceBox<String> choicebox = new ChoiceBox<>();
+        for (Layer layer : layers) {
+            choicebox.getItems().add(layer.getName());
+        }
+        choicebox.getSelectionModel().selectFirst();
 
-        Button ok = new Button("ok");
+        Button ok = new Button("set as current layer");
         ok.setOnAction(e -> {
-            filter = choiceBox.getValue();
+            String name = choicebox.getValue();
+            for(int i = 0; i < layers.size(); i++) {
+                if(name.equals(layers.get(i).getName())) {
+                    newCurrentLayer = i;
+                }
+            }
             window.close();
         });
         Button close = new Button("close");
@@ -49,12 +48,11 @@ public class FilterSelectionBox {
         close.setOnAction(e -> window.close());
         VBox layout = new VBox();
         layout.setSpacing(10);
-        layout.getChildren().addAll(label, choiceBox, buttons);
+        layout.getChildren().addAll(label, choicebox, buttons);
         Scene scene = new Scene(layout);
         window.setScene(scene);
         window.showAndWait();
 
-        return filter;
+        return newCurrentLayer;
     }
-
 }

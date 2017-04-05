@@ -1,3 +1,5 @@
+//package org.wilsonhs.slevenson;
+
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.ChoiceBox;
@@ -13,6 +15,7 @@ import java.util.ArrayList;
  *
  */
 public class LayerDeleteBox {
+
     private static int layerToDelete;
 
     public static int display(ArrayList<Layer> layers) {
@@ -32,7 +35,15 @@ public class LayerDeleteBox {
         choicebox.getSelectionModel().selectFirst();
 
         Button ok = new Button("delete");
-        ok.setOnAction(e -> getChoice(choicebox));
+        ok.setOnAction(e -> {
+            String name = choicebox.getValue();
+            for(int i = 0; i < layers.size(); i++) {
+                if(name.equals(layers.get(i).getName())) {
+                    layerToDelete = i;
+                }
+            }
+            window.close();
+        });
         Button close = new Button("close");
         HBox buttons = new HBox();
         buttons.setSpacing(10);
@@ -46,9 +57,5 @@ public class LayerDeleteBox {
         window.showAndWait();
 
         return layerToDelete;
-    }
-
-    private static void getChoice(ChoiceBox<String> choiceBox) {
-            //
     }
 }
