@@ -45,7 +45,10 @@ public class ChangeLayerBox {
         HBox buttons = new HBox();
         buttons.setSpacing(10);
         buttons.getChildren().addAll(ok,close);
-        close.setOnAction(e -> window.close());
+        close.setOnAction(e -> {
+            window.close();
+            newCurrentLayer = -1;
+        });
         VBox layout = new VBox();
         layout.setSpacing(10);
         layout.getChildren().addAll(label, choicebox, buttons);
