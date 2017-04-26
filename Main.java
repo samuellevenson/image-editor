@@ -13,6 +13,8 @@ import javafx.scene.image.ImageView;
 import java.io.File;
 import java.util.ArrayList;
 
+import static com.sun.tools.doclint.Entity.Delta;
+
 public class Main extends Application {
 
     static Stage window;
@@ -111,21 +113,34 @@ public class Main extends Application {
     }
 
     private static void newLayer(File f, int priority, int id) {
-        Layer toAdd = new Layer(f, priority, id);
-        layers.add(toAdd);
-        imageStack.getChildren().add(new ImageView(toAdd.getPicture()));
+        Layer newLayer = new Layer(f, priority, id);
+        layers.add(newLayer);
+        //
+        Pane pane = new Pane();
+        pane.getChildren().add(newLayer.getImageView());
+        Scene imageScene = new Scene(pane);
+        //trying to drag images around
+        class Delta {double x, y;} //tutorial for dragging nodes used this, represents distance to move (or moved)
+        final Delta dragDelta = new Delta();
+        newLayer.getImageView().setOnMousePressed(e -> {
+            dragDelta.x = newLayer.getImageView().getLayoutX() - e.getX();
+            dragDelta.y = newLayer.getImageView().getLayoutY() - e.getY();
+        });
+        newLayer.getImageView().setOnMouseDragged(e -> {
+            newLayer.getImageView().setLayoutX(e.getX() + dragDelta.x);
+            newLayer.getImageView().setLayoutY(e.getY() + dragDelta.y);
+        });
+        imageStack.getChildren().add(newLayer.getImageView());
     }
 
     private static void makeCheckbox(String name, Layer l) {
         CheckBox cb = new CheckBox(name);
         cb.setSelected(true);
         cb.setOnAction(e -> {
-            layers.get(l.getPriority()).setVisibility(!layers.get(l.getPriority()).isVisible()); //switch whether layer is visible (although this doesn't really do anything)
-            if(cb.isSelected()) {
-                imageStack.getChildren().add(l.getPriority(), new ImageView(l.getPicture()));
-            }
-            else {
-                imageStack.getChildren().remove(l.getId());
+            for(int i = 0; i < layers.size(); i++) { //search through all layers to find the one with the matching id
+                if(layers.get(i).getId() == l.getId()) {
+                    layers.get(i).setVisibility(!layers.get(i).isVisible());  //switch the visibility of the layer
+                }
             }
         });
         visibilityCheckboxes.getChildren().add(cb);
