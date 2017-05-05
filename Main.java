@@ -115,20 +115,25 @@ public class Main extends Application {
     private static void newLayer(File f, int priority, int id) {
         Layer newLayer = new Layer(f, priority, id);
         layers.add(newLayer);
-        //
-        Pane pane = new Pane();
-        pane.getChildren().add(newLayer.getImageView());
-        Scene imageScene = new Scene(pane);
+        AnchorPane anchor = new AnchorPane(newLayer.getImageView());
+        anchor.setLeftAnchor(newLayer.getImageView(), 0.0);
+        anchor.setTopAnchor(newLayer.getImageView(), 0.0);
         //trying to drag images around
-        class Delta {double x, y;} //tutorial for dragging nodes used this, represents distance to move (or moved)
-        final Delta dragDelta = new Delta();
+        class Drag {double x, y, dx, dy;} //tutorial for dragging nodes used this, represents distance to move (or moved)
+        final Drag drag = new Drag();
         newLayer.getImageView().setOnMousePressed(e -> {
-            dragDelta.x = newLayer.getImageView().getLayoutX() - e.getX();
-            dragDelta.y = newLayer.getImageView().getLayoutY() - e.getY();
+            drag.x = e.getSceneX(); //when the mouse is pressed, remember where it was
+            drag.y = e.getSceneY();
         });
         newLayer.getImageView().setOnMouseDragged(e -> {
-            newLayer.getImageView().setLayoutX(e.getX() + dragDelta.x);
-            newLayer.getImageView().setLayoutY(e.getY() + dragDelta.y);
+            drag.dx = e.getX() - drag.x;
+            drag.dy = e.getY() - drag.y;
+
+            double currentXAnchor = AnchorPane.getLeftAnchor(newLayer.getImageView());
+            double currentYAnchor = AnchorPane.getTopAnchor(newLayer.getImageView());
+
+            AnchorPane.setLeftAnchor(newLayer.getImageView(), currentXAnchor + drag.dx);
+            AnchorPane.setTopAnchor(newLayer.getImageView(), currentYAnchor + drag.dy);
         });
         imageStack.getChildren().add(newLayer.getImageView());
     }
