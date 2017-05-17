@@ -41,11 +41,11 @@ public class ChangeLayerWindow {
             }
             window.close();
         });
-        Button close = new Button("close");
+        Button cancel = new Button("close");
         HBox buttons = new HBox();
         buttons.setSpacing(10);
-        buttons.getChildren().addAll(ok,close);
-        close.setOnAction(e -> {
+        buttons.getChildren().addAll(ok,cancel);
+        cancel.setOnAction(e -> {
             window.close();
             newCurrentLayer = -1;
         });

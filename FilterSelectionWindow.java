@@ -19,51 +19,66 @@ import java.util.ArrayList;
  */
 public class FilterSelectionWindow {
 
-    private static Effect filter;
+    private static EffectAndLayer effectAndLayer = new EffectAndLayer();
 
-    public static Effect display(Layer l) {
+    public static EffectAndLayer display(ArrayList<Layer> layerList) {
         Stage window = new Stage();
-
         window.initModality(Modality.APPLICATION_MODAL);
         window.setTitle("filter selection");
         window.setMinWidth(250);
 
         Label label = new Label();
         label.setText("what filter do you want?");
+        ImageView imagePreview = new ImageView(layerList.get(0).getImage());
 
-        ImageView imagePreview = new ImageView(l.getImage());
-
-        ChoiceBox<Effect> choiceBox = new ChoiceBox<>();
-        choiceBox.getItems().add(new BoxBlur());
-        choiceBox.getItems().add(new GaussianBlur());
-        choiceBox.getItems().add(new SepiaTone());
-        choiceBox.getItems().add(new Glow());
-        choiceBox.getSelectionModel().selectFirst();
-        choiceBox.setOnAction(event -> {
-            Effect f = choiceBox.getValue();
+        ChoiceBox<Effect> filterCb = new ChoiceBox<>();
+        filterCb.getItems().add(new BoxBlur());
+        filterCb.getItems().add(new GaussianBlur());
+        filterCb.getItems().add(new SepiaTone());
+        filterCb.getItems().add(new Glow());
+        filterCb.getSelectionModel().selectFirst();
+        filterCb.setOnAction(event -> {
+            Effect f = filterCb.getValue();
             imagePreview.setEffect(f);
             window.show();
+        });
+        imagePreview.setEffect(filterCb.getValue());
+
+        ChoiceBox<String> layersCb = new ChoiceBox<>();
+        for (Layer layer : layerList) {
+            layersCb.getItems().add(layer.getName());
+        }
+        layersCb.getSelectionModel().selectFirst();
+        effectAndLayer.layerNum = 0;
+        layersCb.setOnAction(e -> {
+            String name = layersCb.getValue();
+            for(int i = 0; i < layerList.size(); i++) {
+                if(name.equals(layerList.get(i).getName())) {
+                    imagePreview.setImage(layerList.get(i).getImage());
+                    effectAndLayer.layerNum = i;
+                }
+            }
         });
 
         Button ok = new Button("ok");
         ok.setOnAction(e -> {
-            filter = choiceBox.getValue();
+            effectAndLayer.effect = filterCb.getValue();
             window.close();
         });
 
-        Button close = new Button("close");
+        Button cancel = new Button("cancel");
         HBox buttons = new HBox();
         buttons.setSpacing(10);
-        buttons.getChildren().addAll(ok,close);
-        close.setOnAction(e -> window.close());
+        buttons.getChildren().addAll(ok,cancel);
+        cancel.setOnAction(e -> window.close());
         VBox layout = new VBox();
         layout.setSpacing(10);
-        layout.getChildren().addAll(label, choiceBox, imagePreview, buttons);
+        layout.getChildren().addAll(label, filterCb, layersCb, imagePreview, buttons);
         Scene scene = new Scene(layout);
         window.setScene(scene);
         window.showAndWait();
 
-        return filter;
+        return effectAndLayer;
     }
 
 }
