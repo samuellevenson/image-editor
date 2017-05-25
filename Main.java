@@ -75,9 +75,10 @@ public class Main extends Application{
             mainStage.show();
         });
 
-        MenuItem changeLayer = new MenuItem("change layer... ");
-        changeLayer.setOnAction(e -> {
-            currentLayer = ChangeLayerWindow.display(layerList);
+        MenuItem reorderLayers = new MenuItem("reorder layers... ");
+        reorderLayers.setOnAction(e -> {
+            ReorderAndLayer reorderAndLayer = LayerReorderWindow.display(layerList);
+            imageStack.getChildren().add(reorderAndLayer.newPlace, imageStack.getChildren().remove(reorderAndLayer.layerNum));
         });
         MenuItem deleteLayer = new MenuItem("delete layer...");
         deleteLayer.setOnAction(e -> {
@@ -94,7 +95,7 @@ public class Main extends Application{
                 imageStack.getChildren().get(f.layerNum).setEffect(f.effect);
             }
         });
-        layersMenu.getItems().addAll(addLayer,changeLayer,deleteLayer,applyFilter);
+        layersMenu.getItems().addAll(addLayer,reorderLayers,deleteLayer,applyFilter);
         menuBar.getMenus().addAll(fileMenu,layersMenu);
 
     }
@@ -115,9 +116,11 @@ public class Main extends Application{
             double deltaY = e.getSceneY() - mousePos.getY() ;
             double newX = newLayer.getImageView().getLayoutX() + deltaX;
             double newY = newLayer.getImageView().getLayoutY() + deltaY;
-            if(true) { //condition for checking if image will still be on screen?
-                newLayer.getImageView().relocate(newX, newY);
-            }
+            newX = Math.max(newX, 0);
+            newY = Math.max(newY, 0);
+            newX = Math.min(newX, imageStack.getWidth() - newLayer.getImage().getWidth());
+            newY = Math.min(newY, imageStack.getHeight() - newLayer.getImage().getHeight());
+            newLayer.getImageView().relocate(newX, newY);
             mousePos.setLocation(e.getSceneX(), e.getSceneY());
         });
         //create checkbox to change image's visibilty
@@ -138,6 +141,8 @@ public class Main extends Application{
      */
     public static void showVisibilityCheckboxesWindow() {
         Stage visibilityCheckboxesWindow = new Stage();
+        visibilityCheckboxesWindow.setX(mainStage.getX() + mainStage.getWidth() + 10);
+        visibilityCheckboxesWindow.setY(mainStage.getY());
         visibilityCheckboxesWindow.setTitle("visibility");
         visibilityCheckboxesWindow.setMaxWidth(180);
         visibilityCheckboxes.setSpacing(15);
